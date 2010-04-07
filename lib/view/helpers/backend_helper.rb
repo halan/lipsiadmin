@@ -429,10 +429,20 @@ module Lipsiadmin
           value_field         = value.to_s.downcase == "id" ? "id" : "data['#{ext_object.to_s.pluralize}.#{value}']"
           options[:grid]    ||= "gridPanel"
           options[:table]   ||= ext_object
+          options[:multiple]  ||= False
           options[:url]     ||= "/backend/#{options[:table].to_s.pluralize}.js"
           options[:name]    ||= image_tag("backend/new.gif", :style => "vertical-align:bottom")
-          update_function     = "$('#{object_name}_#{ext_object}_#{value}').value = selections.first().#{value_field}; " + 
-                                "$('#{object_name}_#{ext_object}_#{display}').innerHTML = selections.first().data['#{options[:table].to_s.pluralize}.#{display}']"
+          unless options[:multiple]
+            update_function     = "$('#{object_name}_#{ext_object}_#{value}').value = selections.first().#{value_field}; " + 
+                                  "$('#{object_name}_#{ext_object}_#{display}').innerHTML = selections.first().data['#{options[:table].to_s.pluralize}.#{display}']"
+          else
+            update_function     = "var values = []; var displaies = [];"+
+                                  "selections.each(function(item, i){ "+
+                                    "values.push(item.#{value_field}); " +
+                                    "displaies.push(item.data['#{options[:table].to_s.pluralize}.#{display}']);}, selections);" +
+                                  "$('#{object_name}_#{ext_object}_#{value}').value = values.join(); " +
+                                  "$('#{object_name}_#{ext_object}_#{display}').innerHTML = displaies.join(', ');"
+          end
 
           content_tag(:span, current_value, :id => "#{object_name}_#{ext_object}_#{display}" ) + ' ' +
           build_grid(options[:name], options[:url], options[:grid], :update => update_function) +
