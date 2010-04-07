@@ -425,13 +425,14 @@ module Lipsiadmin
         #   open_standard_grid :warehouse, :supplier, :id, :name
         #
         def open_standard_grid(object_name, ext_object, value, display, options={})
-          current_value       = instance_variable_get("@#{object_name}").send(ext_object).send(display) rescue "Nessuno"
+          current_value       = instance_variable_get("@#{object_name}").send(ext_object).send(display) rescue ""
           value_field         = value.to_s.downcase == "id" ? "id" : "data['#{ext_object.to_s.pluralize}.#{value}']"
           options[:grid]    ||= "gridPanel"
-          options[:url]     ||= "/backend/#{ext_object.to_s.pluralize}.js"
+          options[:table]   ||= ext_object
+          options[:url]     ||= "/backend/#{options[:table].to_s.pluralize}.js"
           options[:name]    ||= image_tag("backend/new.gif", :style => "vertical-align:bottom")
           update_function     = "$('#{object_name}_#{ext_object}_#{value}').value = selections.first().#{value_field}; " + 
-                                "$('#{object_name}_#{ext_object}_#{display}').innerHTML = selections.first().data['#{ext_object.to_s.pluralize}.#{display}']"
+                                "$('#{object_name}_#{ext_object}_#{display}').innerHTML = selections.first().data['#{options[:table].to_s.pluralize}.#{display}']"
 
           content_tag(:span, current_value, :id => "#{object_name}_#{ext_object}_#{display}" ) + ' ' +
           build_grid(options[:name], options[:url], options[:grid], :update => update_function) +
