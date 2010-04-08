@@ -429,7 +429,7 @@ module Lipsiadmin
           value_field         = value.to_s.downcase == "id" ? "id" : "data['#{ext_object.to_s.pluralize}.#{value}']"
           options[:grid]    ||= "gridPanel"
           options[:table]   ||= ext_object
-          options[:multiple]  ||= False
+          options[:multiple]  ||= false
           options[:url]     ||= "/backend/#{options[:table].to_s.pluralize}.js"
           options[:name]    ||= image_tag("backend/new.gif", :style => "vertical-align:bottom")
           unless options[:multiple]
